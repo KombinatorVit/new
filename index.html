@@ -20,39 +20,48 @@
     const SYMBOL_X = 'X';
     const SYMBOL_O = 'O';
 
-    const computeWinner = (cells) => {
-        const lines = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
-
-        for (let i = 0; i < lines.length; i++) {
-            const [a, b, c] = lines[i];
-            if (
-                cells[a] &&
-                cells[a] === cells[b] &&
-                cells[a] === cells[c]
-            ) {
-                return [a, b, c]
-            }
-        }
-    }
 
 
     function App() {
         const [cells, setCells] = React.useState([null, null, null, null, null, null, null, null, null]);
         const [currentStep, setCurrentStep] = React.useState(SYMBOL_O);
         const [winnerSequence, setWinnerSequence] = React.useState();
+        const [isDraw, setIsDraw] = React.useState(false);
+
+
+        const computeWinner = (cells) => {
+            const lines = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            for (let i = 0; i < lines.length; i++) {
+                const [a, b, c] = lines[i];
+                if (
+                    cells[a] &&
+                    cells[a] === cells[b] &&
+                    cells[a] === cells[c]
+                ) {
+                    return [a, b, c]
+                }
+            }
+            if (!cells.includes(null)) {
+                setIsDraw(true);
+            }
+
+            return null;
+        }
+
 
 
         const handleCellClick = (index) => {
-            if (cells[index] || winnerSequence) {
+            if (cells[index] || winnerSequence || isDraw) {
                 return;
             }
             const cellsCopy = cells.slice()
@@ -75,10 +84,16 @@
 
         const winnerSymbol = winnerSequence ? cells[winnerSequence[0]] : undefined
 
+        const onClearHandler = () => {
+            setCells([null, null, null, null, null, null, null, null, null]);
+            setCurrentStep(SYMBOL_O);
+            setWinnerSequence();
+        }
+
         return (
             <div className="game">
                 <div className="game-info">
-                    {winnerSequence ? 'Победитель: ' : 'Ход: '} {renderSymbol(winnerSymbol ?? currentStep)}
+                    {winnerSequence ? 'Победитель: ' : (isDraw ? 'Ничья' : 'Ход: ')} {renderSymbol(winnerSymbol ?? currentStep)}
                 </div>
                 <div className="game-field">
                     {cells.map((symbol, index) => {
@@ -94,6 +109,9 @@
                         )
                     })}
                 </div>
+                <button style={{marginTop:'20px'}} onClick={onClearHandler}>
+                    Очистить
+                </button>
             </div>
         )
     }
