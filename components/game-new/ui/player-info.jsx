@@ -2,16 +2,17 @@ import Image from "next/image";
 import { GameSymbol } from "./game-symbol";
 import clsx from "clsx";
 import { useNow } from "../../lib/timers";
+import { memo } from "react";
 
-export function PlayerInfo({
-                             isRight,
-                             name,
-                             rating,
-                             avatar,
-                             symbol,
-                             timer,
-                             timerStartAt,
-                           }) {
+export const PlayerInfo = memo(function ({
+  isRight,
+  name,
+  rating,
+  avatar,
+  symbol,
+  timer,
+  timerStartAt,
+}) {
   const now = useNow(1000, timerStartAt);
   const mils = Math.max(now ? timer - (now - timerStartAt) : timer, 0);
   const seconds = Math.ceil(mils / 1000);
@@ -56,4 +57,4 @@ export function PlayerInfo({
       </div>
     </div>
   );
-}
+});
